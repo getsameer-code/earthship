@@ -81,15 +81,16 @@ export default async function Home() {
   const [s, reserves, tiers] = await Promise.all([stats(), listProjects(), getTiers()]);
   return (
     <main className="mx-auto w-full max-w-4xl px-5 py-16">
-      <p className="text-sm font-semibold uppercase tracking-widest text-brand">EarthShip</p>
-      <h1 className="mt-3 font-display text-[clamp(1.5rem,7.2vw,4.5rem)] font-extrabold leading-[1.08] tracking-tight">
-        <span className="block">Private nature reserves,</span>
-        <span className="block">owned together,</span>
-        <span className="block text-accent">held in trust.</span>
-      </h1>
-      <div className="mt-10 grid items-center gap-10 md:grid-cols-[1.4fr_1fr]">
-        <div>
-          <p className="text-lg text-muted">
+      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_16rem] md:items-start md:gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        {/* @container + cqw: headline size follows this column's width, so each of the three lines always fits */}
+        <div className="@container">
+          <p className="text-sm font-semibold uppercase tracking-widest text-brand">EarthShip</p>
+          <h1 className="mt-3 font-display text-[clamp(1.5rem,7.8cqw,3rem)] font-extrabold leading-[1.08] tracking-tight">
+            <span className="block">Private nature reserves,</span>
+            <span className="block">owned together,</span>
+            <span className="block text-accent">held in trust.</span>
+          </h1>
+          <p className="mt-6 text-lg text-muted">
             Many people contributing a little makes land possible that none of us could protect alone.
             Each reserve will combine conservation, trails, an interpretation centre and a small campsite.
             All land will be held in a charitable trust, not by any individual.
@@ -101,8 +102,15 @@ export default async function Home() {
             )}
           </div>
         </div>
-        <Image src="/logo.jpg" alt="EarthShip logo: palms and acacia trees by the water" width={720} height={720}
-          priority className="logo-tile mx-auto w-full max-w-xs" />
+        {/* top and right-aligned; on phones it comes first, small */}
+        <Image
+          src="/logo.jpg"
+          alt="EarthShip logo: palms and acacia trees by the water"
+          width={720}
+          height={720}
+          priority
+          className="logo-tile order-first ml-auto w-32 md:order-none md:ml-0 md:w-full"
+        />
       </div>
 
       <section className="mt-20 grid gap-5 sm:grid-cols-2">

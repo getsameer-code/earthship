@@ -37,6 +37,15 @@ const CC_BY_SA = "https://creativecommons.org/licenses/by-sa/4.0/";
 const commons = (file: string) => `https://commons.wikimedia.org/wiki/File:${file}`;
 
 // Photos are from Wikimedia Commons (cropped and resized). Credits are shown in the footer.
+// Tailwind needs these class names written out in full.
+function tierWidth(n: number) {
+  if (n <= 1) return "sm:max-w-xs";
+  if (n === 2) return "sm:w-[calc(50%-0.5rem)]";
+  if (n === 3) return "sm:w-[calc(33.333%-0.667rem)]";
+  if (n === 4) return "sm:w-[calc(50%-0.5rem)] lg:w-[calc(25%-0.75rem)]"; // 2x2, then one even row on wide screens
+  return "sm:w-[calc(50%-0.5rem)] lg:w-[calc(33.333%-0.667rem)]";
+}
+
 const PILLARS = [
   {
     title: "Conservation",
@@ -72,13 +81,15 @@ export default async function Home() {
   const [s, reserves, tiers] = await Promise.all([stats(), listProjects(), getTiers()]);
   return (
     <main className="mx-auto w-full max-w-4xl px-5 py-16">
-      <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
+      <p className="text-sm font-semibold uppercase tracking-widest text-brand">EarthShip</p>
+      <h1 className="mt-3 font-display text-[clamp(1.5rem,7.2vw,4.5rem)] font-extrabold leading-[1.08] tracking-tight">
+        <span className="block">Private nature reserves,</span>
+        <span className="block">owned together,</span>
+        <span className="block text-accent">held in trust.</span>
+      </h1>
+      <div className="mt-10 grid items-center gap-10 md:grid-cols-[1.4fr_1fr]">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-widest text-brand">EarthShip</p>
-          <h1 className="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
-            Private nature reserves, owned together and held in trust.
-          </h1>
-          <p className="mt-5 text-lg text-muted">
+          <p className="text-lg text-muted">
             Many people contributing a little makes land possible that none of us could protect alone.
             Each reserve will combine conservation, trails, an interpretation centre and a small campsite.
             All land will be held in a charitable trust, not by any individual.
@@ -91,7 +102,7 @@ export default async function Home() {
           </div>
         </div>
         <Image src="/logo.jpg" alt="EarthShip logo: palms and acacia trees by the water" width={720} height={720}
-          priority className="logo-tile mx-auto w-full max-w-sm" />
+          priority className="logo-tile mx-auto w-full max-w-xs" />
       </div>
 
       <section className="mt-20 grid gap-5 sm:grid-cols-2">
@@ -108,7 +119,7 @@ export default async function Home() {
 
       {reserves.length > 0 && (
         <section className="mt-20">
-          <h2 className="text-2xl font-semibold">Potential reserves</h2>
+          <h2 className="font-display text-3xl font-bold">Potential reserves</h2>
           <p className="mt-2 text-muted">Places we&apos;re looking at. Nothing is bought until enough support is in place.</p>
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             {reserves.map((r) => (
@@ -152,14 +163,23 @@ export default async function Home() {
 
       {tiers.length > 0 && (
       <section className="mt-20">
-        <h2 className="text-2xl font-semibold">Membership</h2>
+        <h2 className="font-display text-3xl font-bold">Membership</h2>
         <p className="mt-2 text-muted">Indicative tiers. Final terms will be set once the trust is formed.</p>
-        <div className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-4">
+        {/* Balanced rows for any number of tiers: 1-3 in one row, 4 as a 2x2, 5+ in rows of 3 with leftovers centred. */}
+        <div className={`mt-6 flex flex-wrap justify-center gap-4 ${tiers.length === 4 ? "lg:-mx-16" : ""}`}>
           {tiers.map((t) => (
-            <Link key={t.id} href={`/pledge?tier=${t.id}`} className="rounded-xl border border-line bg-card p-5 hover:border-accent">
+            <Link
+              key={t.id}
+              href={`/pledge?tier=${t.id}`}
+              className={`flex w-full flex-col rounded-xl border border-line bg-card p-6 text-center hover:border-accent ${tierWidth(tiers.length)}`}
+            >
               <div className="font-semibold">{t.name}</div>
-              <div className="mt-1 text-xl">{t.custom ? "from " : ""}{inr(t.amountInr)}</div>
-              <p className="mt-2 text-sm text-muted">{t.blurb}</p>
+              <div className="mt-2 text-2xl font-semibold text-accent">
+                {t.custom && <span className="mr-1 text-sm font-normal text-muted">from</span>}
+                {inr(t.amountInr)}
+              </div>
+              <p className="mt-3 text-sm text-muted">{t.blurb}</p>
+              <span className="mt-auto pt-5 text-sm font-semibold text-accent">Pledge →</span>
             </Link>
           ))}
         </div>

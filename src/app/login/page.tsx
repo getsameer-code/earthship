@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ e
   return (
     <main className="mx-auto w-full max-w-sm px-5 py-24">
       <BrandMark />
-      <h1 className="mt-8 text-2xl font-semibold">Team login</h1>
+      <h1 className="font-display font-bold mt-8 text-2xl">Team login</h1>
       {e && <p className="mt-4 text-sm text-red-600">{ERRORS[e] ?? "Sign-in failed."}</p>}
       {sso ? (
         <a href="/api/auth/google" className="btn mt-6">Sign in with Google</a>

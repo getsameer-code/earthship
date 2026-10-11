@@ -12,7 +12,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ t
   return (
     <main className="mx-auto w-full max-w-2xl px-5 py-12">
       <BrandMark />
-      <h1 className="mt-8 text-3xl font-semibold">Add your pledge</h1>
+      <h1 className="font-display font-bold mt-8 text-3xl">Add your pledge</h1>
       <p className="mb-8 mt-2 text-muted">
         We&apos;re gathering early commitments before anything is bought. Pledging tells us how much
         support exists; nobody is charged now. We&apos;ll be in touch personally.

@@ -61,9 +61,9 @@ const PILLARS = [
   },
   {
     title: "Campsites",
-    text: "A small campsite in each reserve: basic tents and simple huts, close to the land. Quiet, and for members.",
+    text: "A small campsite in each reserve: simple huts and basic tents, close to the land. Quiet, and for members.",
     img: "/pillars/camps.jpg",
-    alt: "Camps at Linger properties: a thatched hut with mosquito-net beds, a tent under a rustic shelter among trees, and a campsite under a boulder",
+    alt: "Aerial view of a campsite at Devarayanadurga: tile-roofed huts among trees, with rocky hills behind",
     credits: [], // our own photos
   },
 ];

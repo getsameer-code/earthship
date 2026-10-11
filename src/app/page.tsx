@@ -34,7 +34,6 @@ async function listProjects() {
 
 const CC_BY = "https://creativecommons.org/licenses/by/4.0/";
 const CC_BY_SA = "https://creativecommons.org/licenses/by-sa/4.0/";
-const CC_BY_SA_3 = "https://creativecommons.org/licenses/by-sa/3.0/";
 const commons = (file: string) => `https://commons.wikimedia.org/wiki/File:${file}`;
 
 // Photos are from Wikimedia Commons (cropped and resized). Credits are shown in the footer.
@@ -62,13 +61,10 @@ const PILLARS = [
   },
   {
     title: "Campsites",
-    text: "A small campsite in each reserve: basic tents, a fire circle, simple and quiet, and for members.",
+    text: "A small campsite in each reserve: basic tents and simple huts, close to the land. Quiet, and for members.",
     img: "/pillars/camps.jpg",
-    alt: "A row of basic tents at a forest-edge campsite, beside a group gathered around a campfire at night",
-    credits: [
-      { by: "Likhith N.P", license: "CC BY-SA 3.0", licenseUrl: CC_BY_SA_3, url: commons("Camping_site_near_Kali_river_-_panoramio.jpg") },
-      { by: "Indrajit Das", license: "CC BY 4.0", licenseUrl: CC_BY, url: commons("29RCCMAK_-_Campfire_at_Susunia_base_camp.JPG") },
-    ],
+    alt: "Camps at Linger properties: a thatched hut with mosquito-net beds, a tent under a rustic shelter among trees, and a campsite under a boulder",
+    credits: [], // our own photos
   },
 ];
 
@@ -181,8 +177,8 @@ export default async function Home() {
 
       <footer className="mt-16 space-y-3 text-xs text-muted">
         <p>
-          Photos from Wikimedia Commons, cropped and resized:{" "}
-          {PILLARS.map((p, i) => (
+          Some photos from Wikimedia Commons, cropped and resized:{" "}
+          {PILLARS.filter((p) => p.credits.length > 0).map((p, i) => (
             <span key={p.title}>
               {i > 0 && " · "}
               {p.title}:{" "}

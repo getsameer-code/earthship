@@ -31,11 +31,39 @@ async function listProjects() {
   }
 }
 
+const CC_BY = "https://creativecommons.org/licenses/by/4.0/";
+const CC_BY_SA = "https://creativecommons.org/licenses/by-sa/4.0/";
+
+// Photos are from Wikimedia Commons (cropped and resized). Credits are shown in the footer.
 const PILLARS = [
-  ["Conservation", "Land set aside and restored, protected for the long term rather than developed."],
-  ["Nature trails", "Walkable, low-impact trails so members can actually be in the places they protect."],
-  ["Experience centres", "Small centres for learning, workshops and school visits."],
-  ["Campsites", "A small campsite in each reserve: simple, quiet, and for members."],
+  {
+    title: "Conservation",
+    text: "Land set aside and restored, protected for the long term rather than developed.",
+    img: "/pillars/conservation.jpg",
+    alt: "Dense evergreen rainforest canopy in the southern Western Ghats",
+    credit: { by: "PJeganathan", license: "CC BY 4.0", licenseUrl: CC_BY, url: "https://commons.wikimedia.org/wiki/File:Rainforest_tree_in_southern_western_Ghats_IMG_1851.jpg" },
+  },
+  {
+    title: "Nature trails",
+    text: "Walkable, low-impact trails so members can actually be in the places they protect.",
+    img: "/pillars/trails.jpg",
+    alt: "A footpath climbing a misty grassland ridge in the Kudremukh range, Western Ghats",
+    credit: { by: "iMahesh", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: "https://commons.wikimedia.org/wiki/File:Trekking_trail_on_Netravati_peak.jpg" },
+  },
+  {
+    title: "Experience centres",
+    text: "Small centres for learning, workshops and school visits.",
+    img: "/pillars/centres.jpg",
+    alt: "A Malabar trogon perched in Western Ghats forest",
+    credit: { by: "Shiv's fotografia", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: "https://commons.wikimedia.org/wiki/File:Malabar_Trogon_(Harpactes_fasciatus)_02.jpg" },
+  },
+  {
+    title: "Campsites",
+    text: "A small campsite in each reserve: simple, quiet, and for members.",
+    img: "/pillars/camps.jpg",
+    alt: "Tented cabins on raised decks among trees at a camp in Wayanad",
+    credit: { by: "Stalinsunnykvj", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: "https://commons.wikimedia.org/wiki/File:Cottages_at_Wayanad_Adventure_Camp_Karalad_Lake.jpg" },
+  },
 ];
 
 export default async function Home() {
@@ -65,10 +93,13 @@ export default async function Home() {
       </div>
 
       <section className="mt-20 grid gap-5 sm:grid-cols-2">
-        {PILLARS.map(([t, d]) => (
-          <div key={t} className="rounded-xl border border-line bg-card p-5">
-            <h2 className="font-semibold">{t}</h2>
-            <p className="mt-1 text-sm text-muted">{d}</p>
+        {PILLARS.map((p) => (
+          <div key={p.title} className="overflow-hidden rounded-xl border border-line bg-card">
+            <Image src={p.img} alt={p.alt} width={1000} height={750} sizes="(min-width: 640px) 440px, 100vw" className="aspect-[4/3] w-full object-cover" />
+            <div className="p-5">
+              <h2 className="font-semibold">{p.title}</h2>
+              <p className="mt-1 text-sm text-muted">{p.text}</p>
+            </div>
           </div>
         ))}
       </section>
@@ -140,9 +171,23 @@ export default async function Home() {
         </ol>
       </section>
 
-      <footer className="mt-16 flex justify-between text-xs text-muted">
-        <span>© EarthShip</span>
-        <Link href="/admin">Team</Link>
+      <footer className="mt-16 space-y-3 text-xs text-muted">
+        <p>
+          Photos from Wikimedia Commons, cropped and resized:{" "}
+          {PILLARS.map((p, i) => (
+            <span key={p.title}>
+              {i > 0 && " · "}
+              {p.title}:{" "}
+              <a href={p.credit.url} className="underline" target="_blank" rel="noopener noreferrer">{p.credit.by}</a>{" "}
+              (<a href={p.credit.licenseUrl} className="underline" target="_blank" rel="noopener noreferrer">{p.credit.license}</a>)
+            </span>
+          ))}
+          .
+        </p>
+        <div className="flex justify-between">
+          <span>© EarthShip</span>
+          <Link href="/admin">Team</Link>
+        </div>
       </footer>
     </main>
   );

@@ -1,4 +1,4 @@
-import { date, index, integer, pgTable, text, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
+import { bigint, date, index, integer, pgTable, text, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
 
 export const contacts = pgTable(
   "contacts",
@@ -66,3 +66,32 @@ export const admins = pgTable("admins", {
   lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
 });
 export type Admin = typeof admins.$inferSelect;
+
+// Candidate reserves shown on the public home page (when published).
+export const projects = pgTable("projects", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  location: text("location"),
+  size: text("size"), // free text, e.g. "12 acres"
+  condition: text("condition"), // current condition / description
+  fundsNeededInr: bigint("funds_needed_inr", { mode: "number" }),
+  poc: text("poc"), // point of contact (name, phone...)
+  showPoc: boolean("show_poc").notNull().default(false),
+  published: boolean("published").notNull().default(false),
+  sortOrder: integer("sort_order").notNull().default(0),
+  hasImage: boolean("has_image").notNull().default(false),
+  imageVersion: integer("image_version").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Kept apart so list queries never drag image bytes along. Stored as base64 text.
+export const projectImages = pgTable("project_images", {
+  projectId: uuid("project_id")
+    .primaryKey()
+    .references(() => projects.id, { onDelete: "cascade" }),
+  contentType: text("content_type").notNull(),
+  dataBase64: text("data_base64").notNull(),
+});
+
+export type Project = typeof projects.$inferSelect;

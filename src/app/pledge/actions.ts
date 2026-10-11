@@ -1,11 +1,13 @@
 "use server";
 
+import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
 import { contacts, pledges } from "@/db/schema";
 import { INTERESTS, TIER_IDS, TIERS } from "@/lib/config";
 import { sql } from "drizzle-orm";
+import { notifyNewPledge } from "@/lib/notify";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Please enter your name").max(120),
@@ -69,6 +71,20 @@ export async function submitPledge(_prev: PledgeState, fd: FormData): Promise<Pl
       amountInr: d.amount,
       message: d.message,
     });
+
+    after(() =>
+      notifyNewPledge({
+        contactId: c.id,
+        name: d.name,
+        email: d.email,
+        phone: d.phone,
+        city: d.city,
+        tier: d.tier,
+        amountInr: d.amount,
+        interests,
+        message: d.message,
+      }),
+    );
   } catch (e) {
     console.error("pledge failed", e);
     return { error: "Something went wrong on our side. Please try again in a moment.", values };

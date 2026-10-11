@@ -73,3 +73,11 @@ export const label = (list: readonly { id: string; label?: string; name?: string
 };
 
 export const inr = (n: number) => "₹" + new Intl.NumberFormat("en-IN").format(n);
+
+/** Compact rupee amounts for cards: ₹1.5 crore, ₹40 lakh. */
+export const inrShort = (n: number) => {
+  const trim = (x: number) => String(Math.round(x * 100) / 100);
+  if (n >= 1e7) return `₹${trim(n / 1e7)} crore`;
+  if (n >= 1e5) return `₹${trim(n / 1e5)} lakh`;
+  return inr(n);
+};

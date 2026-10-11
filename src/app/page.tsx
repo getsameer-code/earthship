@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
-import { count, sum, eq } from "drizzle-orm";
+import { asc, count, desc, sum, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { pledges } from "@/db/schema";
-import { TIERS, inr } from "@/lib/config";
+import { pledges, projects } from "@/db/schema";
+import { TIERS, inr, inrShort } from "@/lib/config";
 
 export const revalidate = 300;
 
@@ -19,6 +19,18 @@ async function stats() {
   }
 }
 
+async function listProjects() {
+  try {
+    return await db()
+      .select()
+      .from(projects)
+      .where(eq(projects.published, true))
+      .orderBy(asc(projects.sortOrder), desc(projects.createdAt));
+  } catch {
+    return [];
+  }
+}
+
 const PILLARS = [
   ["Conservation", "Land set aside and restored, protected for the long term rather than developed."],
   ["Nature trails", "Walkable, low-impact trails so members can actually be in the places they protect."],
@@ -27,7 +39,7 @@ const PILLARS = [
 ];
 
 export default async function Home() {
-  const s = await stats();
+  const [s, reserves] = await Promise.all([stats(), listProjects()]);
   return (
     <main className="mx-auto w-full max-w-4xl px-5 py-16">
       <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
@@ -60,6 +72,50 @@ export default async function Home() {
           </div>
         ))}
       </section>
+
+      {reserves.length > 0 && (
+        <section className="mt-20">
+          <h2 className="text-2xl font-semibold">Potential reserves</h2>
+          <p className="mt-2 text-muted">Places we&apos;re looking at. Nothing is bought until enough support is in place.</p>
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            {reserves.map((r) => (
+              <article key={r.id} className="overflow-hidden rounded-xl border border-line bg-card">
+                {r.hasImage && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={`/projects/${r.id}/image?v=${r.imageVersion}`}
+                    alt={r.name}
+                    loading="lazy"
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+                )}
+                <div className="p-5">
+                  <h3 className="text-lg font-semibold">{r.name}</h3>
+                  <p className="mt-1 text-sm text-muted">
+                    {[r.location, r.size].filter(Boolean).join(" · ")}
+                  </p>
+                  {r.condition && <p className="mt-3 whitespace-pre-line text-sm">{r.condition}</p>}
+                  <dl className="mt-4 space-y-1 text-sm">
+                    {r.fundsNeededInr != null && (
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted">Funds needed</dt>
+                        <dd className="font-semibold">{inrShort(r.fundsNeededInr)}</dd>
+                      </div>
+                    )}
+                    {r.showPoc && r.poc && (
+                      <div className="flex justify-between gap-4">
+                        <dt className="text-muted">Contact</dt>
+                        <dd className="text-right">{r.poc}</dd>
+                      </div>
+                    )}
+                  </dl>
+                  <Link href="/pledge" className="btn-ghost mt-4">Pledge your support</Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="mt-20">
         <h2 className="text-2xl font-semibold">Membership</h2>

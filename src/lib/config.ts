@@ -4,36 +4,17 @@ export const SITE = {
   tagline: "A crowdsourced set of private nature reserves, held in trust for the long term.",
 };
 
-export const TIERS = [
-  {
-    id: "annual",
-    name: "Annual member",
-    amountInr: 5000,
-    blurb: "Renews each year. The easiest way to be part of it from day one.",
-  },
-  {
-    id: "five_year",
-    name: "5-year member",
-    amountInr: 20000,
-    blurb: "A five-year commitment at a lower yearly cost.",
-  },
-  {
-    id: "lifetime",
-    name: "Lifetime member",
-    amountInr: 100000,
-    blurb: "One contribution, membership for life.",
-  },
-  {
-    id: "patron",
-    name: "Patron",
-    amountInr: 500000,
-    blurb: "For those who want to seed land acquisition. Amount is yours to name.",
-    custom: true,
-  },
-] as const;
-
-export type TierId = (typeof TIERS)[number]["id"];
-export const TIER_IDS = TIERS.map((t) => t.id) as [TierId, ...TierId[]];
+// Seed/fallback only. The live list is the `tiers` table, edited at /admin/tiers.
+export const DEFAULT_TIERS = [
+  { id: "annual", name: "Annual member", amountInr: 5000, custom: false, sortOrder: 0,
+    blurb: "Renews each year. The easiest way to be part of it from day one." },
+  { id: "five_year", name: "5-year member", amountInr: 20000, custom: false, sortOrder: 1,
+    blurb: "A five-year commitment at a lower yearly cost." },
+  { id: "lifetime", name: "Lifetime member", amountInr: 100000, custom: false, sortOrder: 2,
+    blurb: "One contribution, membership for life." },
+  { id: "patron", name: "Patron", amountInr: 500000, custom: true, sortOrder: 3,
+    blurb: "For those who want to seed land acquisition. Amount is yours to name." },
+];
 
 export const INTERESTS = [
   { id: "conservation", label: "Conservation & restoration" },

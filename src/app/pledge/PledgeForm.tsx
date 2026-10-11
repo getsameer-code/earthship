@@ -1,20 +1,21 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { INTERESTS, TIERS, inr } from "@/lib/config";
+import { INTERESTS, inr } from "@/lib/config";
+import type { Tier } from "@/db/schema";
 import { submitPledge, type PledgeState } from "./actions";
 
-export default function PledgeForm({ defaultTier }: { defaultTier: string }) {
+export default function PledgeForm({ tiers, defaultTier }: { tiers: Tier[]; defaultTier: string }) {
   const [state, action, pending] = useActionState<PledgeState, FormData>(submitPledge, {});
   const v = state.values ?? {};
   const [tier, setTier] = useState(v.tier ?? defaultTier);
-  const custom = TIERS.find((t) => t.id === tier && "custom" in t);
+  const custom = tiers.find((t) => t.id === tier && t.custom);
 
   return (
     <form action={action} className="space-y-6">
       <fieldset className="space-y-2">
         <legend className="label">I&apos;d like to pledge as</legend>
-        {TIERS.map((t) => (
+        {tiers.map((t) => (
           <label
             key={t.id}
             className={`flex cursor-pointer gap-3 rounded-lg border p-3 ${tier === t.id ? "border-accent bg-card" : "border-line"}`}
@@ -29,7 +30,7 @@ export default function PledgeForm({ defaultTier }: { defaultTier: string }) {
             />
             <span>
               <span className="font-semibold">
-                {t.name} · {"custom" in t ? `from ${inr(t.amountInr)}` : inr(t.amountInr)}
+                {t.name} · {t.custom ? `from ${inr(t.amountInr)}` : inr(t.amountInr)}
               </span>
               <span className="block text-sm text-muted">{t.blurb}</span>
             </span>

@@ -1,6 +1,6 @@
 import { db } from "@/db";
 import { admins } from "@/db/schema";
-import { inr, label, INTERESTS, TIERS } from "@/lib/config";
+import { inr, label, INTERESTS } from "@/lib/config";
 
 type PledgeInfo = {
   contactId: string;
@@ -8,7 +8,7 @@ type PledgeInfo = {
   email: string;
   phone?: string;
   city?: string;
-  tier: string;
+  tierName: string;
   amountInr: number;
   interests: string[];
   message?: string;
@@ -32,7 +32,7 @@ export async function notifyNewPledge(p: PledgeInfo) {
     ];
     const site = process.env.SITE_URL ?? "https://earthship.vercel.app";
     const lines: (string | false | undefined)[] = [
-      `${oneLine(p.name)} just pledged ${inr(p.amountInr)} (${label(TIERS, p.tier)}).`,
+      `${oneLine(p.name)} just pledged ${inr(p.amountInr)} (${oneLine(p.tierName)}).`,
       "",
       `Email: ${p.email}`,
       p.phone && `Phone: ${p.phone}`,

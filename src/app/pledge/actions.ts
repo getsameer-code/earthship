@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
 import { contacts, pledges } from "@/db/schema";
-import { INTERESTS, TIER_IDS, TIERS } from "@/lib/config";
+import { INTERESTS } from "@/lib/config";
+import { getTiers } from "@/lib/tiers";
 import { sql } from "drizzle-orm";
 import { notifyNewPledge } from "@/lib/notify";
 
@@ -14,7 +15,7 @@ const schema = z.object({
   email: z.email("Please enter a valid email").max(200).transform((e) => e.toLowerCase()),
   phone: z.string().trim().max(30).optional(),
   city: z.string().trim().max(80).optional(),
-  tier: z.enum(TIER_IDS),
+  tier: z.string().min(1, "Please choose a membership option"),
   amount: z.coerce.number().int().min(1000, "Amount looks too low").max(1_000_000_000),
   message: z.string().trim().max(2000).optional(),
   interests: z.array(z.string()).default([]),
@@ -32,14 +33,16 @@ export async function submitPledge(_prev: PledgeState, fd: FormData): Promise<Pl
   );
 
   const tierId = String(fd.get("tier") ?? "");
-  const tier = TIERS.find((t) => t.id === tierId);
+  const tier = (await getTiers()).find((t) => t.id === tierId);
+  if (!tier) return { error: "Please choose a membership option", values };
   const parsed = schema.safeParse({
     name: fd.get("name"),
     email: fd.get("email"),
     phone: fd.get("phone") || undefined,
     city: fd.get("city") || undefined,
-    tier: tierId,
-    amount: "custom" in (tier ?? {}) ? fd.get("amount") : tier?.amountInr,
+    tier: tier.id,
+    // fixed tiers use the server-side price; only "name your own" tiers take a typed amount
+    amount: tier.custom ? fd.get("amount") : tier.amountInr,
     message: fd.get("message") || undefined,
     interests: fd.getAll("interests").map(String),
     consent: fd.get("consent"),
@@ -68,6 +71,7 @@ export async function submitPledge(_prev: PledgeState, fd: FormData): Promise<Pl
     await db().insert(pledges).values({
       contactId: c.id,
       tier: d.tier,
+      tierName: tier.name,
       amountInr: d.amount,
       message: d.message,
     });
@@ -79,7 +83,7 @@ export async function submitPledge(_prev: PledgeState, fd: FormData): Promise<Pl
         email: d.email,
         phone: d.phone,
         city: d.city,
-        tier: d.tier,
+        tierName: tier.name,
         amountInr: d.amount,
         interests,
         message: d.message,

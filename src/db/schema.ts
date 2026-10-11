@@ -30,7 +30,8 @@ export const pledges = pgTable(
     contactId: uuid("contact_id")
       .notNull()
       .references(() => contacts.id, { onDelete: "cascade" }),
-    tier: text("tier").notNull(),
+    tier: text("tier").notNull(), // tiers.id at the time; no FK so tiers can be deleted
+    tierName: text("tier_name"), // snapshot of the tier's name, so deleted tiers still read well
     amountInr: integer("amount_inr").notNull(),
     message: text("message"),
     withdrawn: boolean("withdrawn").notNull().default(false),
@@ -95,3 +96,16 @@ export const projectImages = pgTable("project_images", {
 });
 
 export type Project = typeof projects.$inferSelect;
+
+// Membership options shown on the home page and pledge form. Editable in /admin/tiers.
+export const tiers = pgTable("tiers", {
+  id: text("id").primaryKey(), // stable slug; pledges refer to it
+  name: text("name").notNull(),
+  amountInr: integer("amount_inr").notNull(), // for "custom" tiers this is the minimum / "from" amount
+  blurb: text("blurb").notNull().default(""),
+  custom: boolean("custom").notNull().default(false), // pledger names their own amount
+  published: boolean("published").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+export type Tier = typeof tiers.$inferSelect;

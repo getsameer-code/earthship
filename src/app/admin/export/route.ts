@@ -2,6 +2,7 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { contacts, pledges } from "@/db/schema";
 import { isAdmin } from "@/lib/auth";
+import { pledgeTierName } from "@/lib/tiers";
 
 const esc = (v: unknown) => {
   let s = v == null ? "" : String(v);
@@ -19,7 +20,7 @@ export async function GET() {
 
   const head = ["name","email","phone","city","status","segment","owner","tags","interests","next_follow_up","source","created_at","pledge_tier","pledge_amount_inr","pledge_withdrawn"];
   const lines = rows.map(({ c, p }) =>
-    [c.name,c.email,c.phone,c.city,c.status,c.segment,c.owner,c.tags.join("; "),c.interests.join("; "),c.nextFollowUp,c.source,c.createdAt.toISOString(),p?.tier,p?.amountInr,p?.withdrawn].map(esc).join(","),
+    [c.name,c.email,c.phone,c.city,c.status,c.segment,c.owner,c.tags.join("; "),c.interests.join("; "),c.nextFollowUp,c.source,c.createdAt.toISOString(),p && pledgeTierName(p),p?.amountInr,p?.withdrawn].map(esc).join(","),
   );
   return new Response([head.join(","), ...lines].join("\n"), {
     headers: {

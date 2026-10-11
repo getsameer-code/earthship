@@ -3,7 +3,8 @@ import Link from "next/link";
 import { asc, count, desc, sum, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { pledges, projects } from "@/db/schema";
-import { TIERS, inr, inrShort } from "@/lib/config";
+import { inr, inrShort } from "@/lib/config";
+import { getTiers } from "@/lib/tiers";
 
 export const revalidate = 300;
 
@@ -72,7 +73,7 @@ const PILLARS = [
 ];
 
 export default async function Home() {
-  const [s, reserves] = await Promise.all([stats(), listProjects()]);
+  const [s, reserves, tiers] = await Promise.all([stats(), listProjects(), getTiers()]);
   return (
     <main className="mx-auto w-full max-w-4xl px-5 py-16">
       <div className="grid items-center gap-10 md:grid-cols-[1.3fr_1fr]">
@@ -153,19 +154,21 @@ export default async function Home() {
         </section>
       )}
 
+      {tiers.length > 0 && (
       <section className="mt-20">
         <h2 className="text-2xl font-semibold">Membership</h2>
         <p className="mt-2 text-muted">Indicative tiers. Final terms will be set once the trust is formed.</p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {TIERS.map((t) => (
+        <div className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] gap-4">
+          {tiers.map((t) => (
             <Link key={t.id} href={`/pledge?tier=${t.id}`} className="rounded-xl border border-line bg-card p-5 hover:border-accent">
               <div className="font-semibold">{t.name}</div>
-              <div className="mt-1 text-xl">{"custom" in t ? "from " : ""}{inr(t.amountInr)}</div>
+              <div className="mt-1 text-xl">{t.custom ? "from " : ""}{inr(t.amountInr)}</div>
               <p className="mt-2 text-sm text-muted">{t.blurb}</p>
             </Link>
           ))}
         </div>
       </section>
+      )}
 
       <section className="mt-20 rounded-xl border border-line p-6 text-sm text-muted">
         <h2 className="mb-2 font-semibold text-foreground">How this works right now</h2>

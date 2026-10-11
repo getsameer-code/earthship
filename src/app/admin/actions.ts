@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { admins, contacts, interactions, pledges } from "@/db/schema";
-import { INTERACTION_TYPES, SEGMENTS, STATUSES, TIER_IDS, TIERS } from "@/lib/config";
+import { INTERACTION_TYPES, SEGMENTS, STATUSES } from "@/lib/config";
+import { getTiers } from "@/lib/tiers";
 import { requireAdmin } from "@/lib/auth";
 
 const oneOf = <T extends readonly { id: string }[]>(list: T, v: FormDataEntryValue | null, fallback: string) =>
@@ -79,10 +80,11 @@ export async function addInteraction(id: string, fd: FormData) {
 
 export async function addPledge(id: string, fd: FormData) {
   await requireAdmin();
-  const tier = oneOf(TIERS, fd.get("tier"), "annual") as (typeof TIER_IDS)[number];
+  const tier = (await getTiers({ all: true })).find((t) => t.id === fd.get("tier"));
+  if (!tier) throw new Error("Unknown tier");
   const amount = Math.round(Number(fd.get("amount")));
   if (!Number.isFinite(amount) || amount < 1) throw new Error("Invalid amount");
-  await db().insert(pledges).values({ contactId: id, tier, amountInr: amount, message: text(fd.get("message")) });
+  await db().insert(pledges).values({ contactId: id, tier: tier.id, tierName: tier.name, amountInr: amount, message: text(fd.get("message")) });
   revalidatePath(`/admin/contacts/${id}`);
   revalidatePath("/admin");
 }

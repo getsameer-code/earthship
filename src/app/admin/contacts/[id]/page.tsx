@@ -4,7 +4,8 @@ import { desc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { requireAdmin } from "@/lib/auth";
 import { contacts, interactions, pledges } from "@/db/schema";
-import { INTERACTION_TYPES, INTERESTS, SEGMENTS, STATUSES, TIERS, inr, label } from "@/lib/config";
+import { INTERACTION_TYPES, INTERESTS, SEGMENTS, STATUSES, inr, label } from "@/lib/config";
+import { getTiers, pledgeTierName } from "@/lib/tiers";
 import { addInteraction, addPledge, deleteContact, toggleWithdrawn, updateContact } from "../../actions";
 
 const UUID = /^[0-9a-f-]{36}$/i;
@@ -16,6 +17,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const [c] = await db().select().from(contacts).where(eq(contacts.id, id));
   if (!c) notFound();
   const ps = await db().select().from(pledges).where(eq(pledges.contactId, id)).orderBy(desc(pledges.createdAt));
+  const allTiers = await getTiers({ all: true });
   const log = await db().select().from(interactions).where(eq(interactions.contactId, id)).orderBy(desc(interactions.createdAt));
 
   return (
@@ -58,7 +60,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
           {ps.map((p) => (
             <li key={p.id} className="rounded-lg border border-line bg-card p-3">
               <div className={`flex justify-between ${p.withdrawn ? "text-muted line-through" : ""}`}>
-                <span>{label(TIERS, p.tier)} · {inr(p.amountInr)}</span>
+                <span>{pledgeTierName(p)} · {inr(p.amountInr)}</span>
                 <span className="text-muted">{p.createdAt.toLocaleDateString("en-IN")}</span>
               </div>
               {p.message && <p className="mt-1 text-muted">“{p.message}”</p>}
@@ -72,7 +74,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         <details className="mt-3 text-sm">
           <summary className="cursor-pointer text-muted">Record a pledge (e.g. from a conversation)</summary>
           <form action={addPledge.bind(null, id)} className="mt-2 space-y-2">
-            <select name="tier" className="input">{TIERS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
+            <select name="tier" className="input">{allTiers.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select>
             <input name="amount" type="number" min={1} placeholder="Amount ₹" required className="input" />
             <input name="message" placeholder="Note (optional)" className="input" />
             <button className="btn-ghost">Add pledge</button>

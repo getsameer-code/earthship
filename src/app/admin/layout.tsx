@@ -19,6 +19,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
           <BrandMark size={32} /><Link href="/admin" className="font-semibold">CRM</Link>
           <Link href="/admin/new" className="text-muted">+ Add contact</Link>
           <Link href="/admin/projects" className="text-muted">Projects</Link>
+          <Link href="/admin/tiers" className="text-muted">Tiers</Link>
           <Link href="/admin/team" className="text-muted">Team</Link>
           <Link href="/admin/export" className="text-muted" prefetch={false}>Export CSV</Link>
           <Link href="/" className="text-muted">Public site</Link>

@@ -17,3 +17,4 @@ Next.js (App Router) · Postgres (Drizzle) · deploy on Vercel.
 - `src/app/pledge`: public pledge form. `src/app/admin`: CRM (list, contact detail, log, CSV export).
 
 Pledges are non-binding; no payments are taken. Add Razorpay later once the trust/Section 8 exists.
+# earthship

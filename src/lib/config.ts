@@ -39,7 +39,7 @@ export const INTERESTS = [
   { id: "conservation", label: "Conservation & restoration" },
   { id: "trails", label: "Nature trails" },
   { id: "camping", label: "Campsite" },
-  { id: "experience", label: "Experience centre / education" },
+  { id: "experience", label: "Interpretation centre / education" },
   { id: "volunteer", label: "Volunteering" },
   { id: "land", label: "I know of land that could work" },
 ] as const;

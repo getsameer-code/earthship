@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://earthship.vercel.app"),
   title: "EarthShip — private nature reserves, held in trust",
   description:
-    "A crowdsourced set of private nature reserves with conservation, trails, experience centres and campsites. Pledge your support.",
+    "A crowdsourced set of private nature reserves with conservation, trails, interpretation centres and campsites. Pledge your support.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

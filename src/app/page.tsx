@@ -33,6 +33,8 @@ async function listProjects() {
 
 const CC_BY = "https://creativecommons.org/licenses/by/4.0/";
 const CC_BY_SA = "https://creativecommons.org/licenses/by-sa/4.0/";
+const CC_BY_SA_3 = "https://creativecommons.org/licenses/by-sa/3.0/";
+const commons = (file: string) => `https://commons.wikimedia.org/wiki/File:${file}`;
 
 // Photos are from Wikimedia Commons (cropped and resized). Credits are shown in the footer.
 const PILLARS = [
@@ -41,28 +43,31 @@ const PILLARS = [
     text: "Land set aside and restored, protected for the long term rather than developed.",
     img: "/pillars/conservation.jpg",
     alt: "Dense evergreen rainforest canopy in the southern Western Ghats",
-    credit: { by: "PJeganathan", license: "CC BY 4.0", licenseUrl: CC_BY, url: "https://commons.wikimedia.org/wiki/File:Rainforest_tree_in_southern_western_Ghats_IMG_1851.jpg" },
+    credits: [{ by: "PJeganathan", license: "CC BY 4.0", licenseUrl: CC_BY, url: commons("Rainforest_tree_in_southern_western_Ghats_IMG_1851.jpg") }],
   },
   {
     title: "Nature trails",
     text: "Walkable, low-impact trails so members can actually be in the places they protect.",
     img: "/pillars/trails.jpg",
-    alt: "A footpath climbing a misty grassland ridge in the Kudremukh range, Western Ghats",
-    credit: { by: "iMahesh", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: "https://commons.wikimedia.org/wiki/File:Trekking_trail_on_Netravati_peak.jpg" },
+    alt: "A group of trekkers walking down a grassy trail on a Western Ghats hillside",
+    credits: [{ by: "Kksens85", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: commons("Trek_at_velliangiri.jpg") }],
   },
   {
-    title: "Experience centres",
-    text: "Small centres for learning, workshops and school visits.",
+    title: "Interpretation centres",
+    text: "Small centres where visitors learn about the forest around them: workshops, school visits and local stories.",
     img: "/pillars/centres.jpg",
-    alt: "A Malabar trogon perched in Western Ghats forest",
-    credit: { by: "Shiv's fotografia", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: "https://commons.wikimedia.org/wiki/File:Malabar_Trogon_(Harpactes_fasciatus)_02.jpg" },
+    alt: "Visitors looking at wildlife murals inside a nature interpretation centre",
+    credits: [{ by: "PJeganathan", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: commons("Visitors_inside_the_Interpretation_Centre_at_Karaivetti_Bird_Sanctuary_JEG3197.jpg") }],
   },
   {
     title: "Campsites",
-    text: "A small campsite in each reserve: simple, quiet, and for members.",
+    text: "A small campsite in each reserve: basic tents, a fire circle, simple and quiet, and for members.",
     img: "/pillars/camps.jpg",
-    alt: "Tented cabins on raised decks among trees at a camp in Wayanad",
-    credit: { by: "Stalinsunnykvj", license: "CC BY-SA 4.0", licenseUrl: CC_BY_SA, url: "https://commons.wikimedia.org/wiki/File:Cottages_at_Wayanad_Adventure_Camp_Karalad_Lake.jpg" },
+    alt: "A row of basic tents at a forest-edge campsite, beside a group gathered around a campfire at night",
+    credits: [
+      { by: "Likhith N.P", license: "CC BY-SA 3.0", licenseUrl: CC_BY_SA_3, url: commons("Camping_site_near_Kali_river_-_panoramio.jpg") },
+      { by: "Indrajit Das", license: "CC BY 4.0", licenseUrl: CC_BY, url: commons("29RCCMAK_-_Campfire_at_Susunia_base_camp.JPG") },
+    ],
   },
 ];
 
@@ -78,7 +83,7 @@ export default async function Home() {
           </h1>
           <p className="mt-5 text-lg text-muted">
             Many people contributing a little makes land possible that none of us could protect alone.
-            Each reserve will combine conservation, trails, an experience centre and a small campsite.
+            Each reserve will combine conservation, trails, an interpretation centre and a small campsite.
             All land will be held in a charitable trust, not by any individual.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -178,8 +183,13 @@ export default async function Home() {
             <span key={p.title}>
               {i > 0 && " · "}
               {p.title}:{" "}
-              <a href={p.credit.url} className="underline" target="_blank" rel="noopener noreferrer">{p.credit.by}</a>{" "}
-              (<a href={p.credit.licenseUrl} className="underline" target="_blank" rel="noopener noreferrer">{p.credit.license}</a>)
+              {p.credits.map((c, j) => (
+                <span key={c.url}>
+                  {j > 0 && ", "}
+                  <a href={c.url} className="underline" target="_blank" rel="noopener noreferrer">{c.by}</a>{" "}
+                  (<a href={c.licenseUrl} className="underline" target="_blank" rel="noopener noreferrer">{c.license}</a>)
+                </span>
+              ))}
             </span>
           ))}
           .

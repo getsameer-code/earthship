@@ -1,36 +1,19 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# EarthShip
 
-## Getting Started
+Pledge site + lightweight CRM for a crowdsourced network of private nature reserves.
+Next.js (App Router) · Postgres (Drizzle) · deploy on Vercel.
 
-First, run the development server:
+## Setup
+1. Create a Postgres DB (Neon via the Vercel Marketplace). Copy `.env.example` to `.env.local` and fill it in.
+2. `npm install`, then create tables with `npm run db:push`, or run the SQL files in `drizzle/` in order (needed when DB credentials can't be pulled locally).
+3. Seed the first admin: `INSERT INTO admins (email) VALUES ('you@gmail.com');`
+4. Google sign-in: create an OAuth Web client with redirect URI `<SITE_URL>/api/auth/google/callback`; set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SITE_URL`. More admins can be added at `/admin/team`.
+5. `npm run dev`, then open `/pledge` and `/login` (team CRM at `/admin`).
+6. Deploy: import the repo in Vercel and set the same env vars.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Where things live
+- `src/lib/config.ts`: tier names/amounts (placeholders!), interests, statuses, segments.
+- `src/db/schema.ts`: contacts, pledges, interactions, admins.
+- `src/app/pledge`: public pledge form. `src/app/admin`: CRM (list, contact detail, log, CSV export).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Pledges are non-binding; no payments are taken. Add Razorpay later once the trust/Section 8 exists.
